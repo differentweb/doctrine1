@@ -638,8 +638,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      *
      * @return integer
      */
-    #[\ReturnTypeWillChange]
-    public function count()
+    public function count(): int
     {
         return count($this->_connections);
     }
@@ -649,8 +648,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      *
      * @return ArrayIterator
      */
-    #[\ReturnTypeWillChange]
-    public function getIterator()
+    public function getIterator(): \Traversable
     {
         return new ArrayIterator($this->_connections);
     }
@@ -664,7 +662,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
     public function getCurrentConnection()
     {
         $i = $this->_currIndex;
-        if ( ! isset($this->_connections[$i])) {
+        if (!isset($this->_connections[$i])) {
             throw new Doctrine_Connection_Exception('There is no open connection');
         }
         return $this->_connections[$i];
@@ -677,14 +675,14 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      * @return void
      * @todo package:dbal
      */
-    public function createDatabases($specifiedConnections = array())
+    public function createDatabases($specifiedConnections = [])
     {
-        if ( ! is_array($specifiedConnections)) {
+        if (!\is_array($specifiedConnections)) {
             $specifiedConnections = (array) $specifiedConnections;
         }
 
         foreach ($this as $name => $connection) {
-            if ( ! empty($specifiedConnections) && ! in_array($name, $specifiedConnections)) {
+            if (!empty($specifiedConnections) && !\in_array($name, $specifiedConnections)) {
                 continue;
             }
 
