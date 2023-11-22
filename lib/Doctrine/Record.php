@@ -1885,8 +1885,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      *
      * @return integer          the number of columns in this record
      */
-    #[\ReturnTypeWillChange]
-    public function count()
+    public function count(): int
     {
         return count($this->_data);
     }
@@ -1896,7 +1895,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      *
      * @return integer          the number of columns in this record
      */
-    public function columnCount()
+    public function columnCount(): int
     {
         return $this->count();
     }
@@ -1983,7 +1982,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      * imports data from a php array
      *
      * @link http://www.doctrine-project.org/documentation/manual/1_1/en/working-with-models
-     * @param string $array  array of data, see link for documentation
+     * @param array $array  array of data, see link for documentation
      * @param bool   $deep   whether or not to act on relations
      * @return void
      */
@@ -2110,11 +2109,10 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      */
     public function importFrom($type, $data, $deep = true)
     {
-        if ($type == 'array') {
+        if (\is_array($data) && $type == 'array') {
             return $this->fromArray($data, $deep);
-        } else {
-            return $this->fromArray(Doctrine_Parser::load($data, $type), $deep);
         }
+        return $this->fromArray(Doctrine_Parser::load($data, $type), $deep);
     }
 
     /**
@@ -2183,8 +2181,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      * implements IteratorAggregate interface
      * @return Doctrine_Record_Iterator     iterator through data
      */
-    #[\ReturnTypeWillChange]
-    public function getIterator()
+    public function getIterator(): Traversable
     {
         return new Doctrine_Record_Iterator($this);
     }
