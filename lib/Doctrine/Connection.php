@@ -64,7 +64,9 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @var array $tables                       an array containing all the initialized Doctrine_Table objects
      *                                          keys representing Doctrine_Table component names and values as Doctrine_Table objects
      */
-    protected $tables           = array();
+    protected $tables = [];
+
+    protected $exported = [];
 
     /**
      * $_name
@@ -85,21 +87,21 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     /**
      * @var boolean $isConnected                whether or not a connection has been established
      */
-    protected $isConnected      = false;
+    protected $isConnected = false;
 
     /**
      * @var array $supported                    an array containing all features this driver supports,
      *                                          keys representing feature names and values as
      *                                          one of the following (true, false, 'emulated')
      */
-    protected $supported        = array();
+    protected $supported = [];
 
     /**
      * @var array $pendingAttributes            An array of pending attributes. When setting attributes
      *                                          no connection is needed. When connected all the pending
      *                                          attributes are passed to the underlying adapter (usually PDO) instance.
      */
-    protected $pendingAttributes  = array();
+    protected $pendingAttributes  = [];
 
     /**
      * @var array $modules                      an array containing all modules
@@ -159,9 +161,9 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
     /**
      * @var array $serverInfo
      */
-    protected $serverInfo = array();
+    protected $serverInfo = [];
 
-    protected $options    = array();
+    protected $options = [];
 
     /**
      * @var array $supportedDrivers         an array containing all supported drivers
@@ -607,7 +609,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * deletes table row(s) matching the specified identifier
      *
      * @throws Doctrine_Connection_Exception    if something went wrong at the database level
-     * @param string $table         The table to delete data from
+     * @param Doctrine_Table $table         The table to delete data from
      * @param array $identifier     An associateve array containing identifier column-value pairs.
      * @return integer              The number of affected rows
      */
@@ -746,9 +748,9 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @param array $arr           identifiers array to be quoted
      * @param bool $checkOption     check the 'quote_identifier' option
      *
-     * @return string               quoted identifier string
+     * @return array               quoted identifier string
      */
-    public function quoteMultipleIdentifier($arr, $checkOption = true)
+    public function quoteMultipleIdentifier($arr, $checkOption = true): array
     {
         foreach ($arr as $k => $v) {
             $arr[$k] = $this->quoteIdentifier($v, $checkOption);
@@ -1178,8 +1180,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      *
      * @return ArrayIterator        SPL ArrayIterator object
      */
-    #[\ReturnTypeWillChange]
-    public function getIterator()
+    public function getIterator(): ArrayIterator
     {
         return new ArrayIterator($this->tables);
     }
@@ -1189,8 +1190,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      *
      * @return integer
      */
-    #[\ReturnTypeWillChange]
-    public function count()
+    public function count(): int
     {
         return $this->_count;
     }
@@ -1232,7 +1232,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      *
      * @return Doctrine_Query
      */
-    public function createQuery()
+    public function createQuery(): Doctrine_Query
     {
         return Doctrine_Query::create();
     }
@@ -1545,9 +1545,9 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * This value is set in the Doctrine_Export_{DRIVER} classes if required
      *
      * @param string $info
-     * @return void
+     * @return Doctrine_Connection
      */
-    public function getTmpConnection($info)
+    public function getTmpConnection($info): Doctrine_Connection
     {
         $pdoDsn = $info['scheme'] . ':';
 
