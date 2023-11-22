@@ -62,13 +62,12 @@ abstract class Doctrine_Parser
      * Get instance of the specified parser
      *
      * @param string $type
-     * @return void
+     * @return object
      * @author Jonathan H. Wage
      */
-    static public function getParser($type)
+    static public function getParser($type): object
     {
-        $class = 'Doctrine_Parser_'.ucfirst($type);
-
+        $class = 'Doctrine_Parser_' . \ucfirst($type);
         return new $class;
     }
 
@@ -79,7 +78,7 @@ abstract class Doctrine_Parser
      *
      * @param string $path
      * @param string $type
-     * @return void
+     * @return array
      * @author Jonathan H. Wage
      */
     static public function load($path, $type = 'xml', $charset = 'UTF-8')
@@ -115,22 +114,22 @@ abstract class Doctrine_Parser
      * Either should allow php code in it.
      *
      * @param string $path
-     * @return void
+     * @return string
      */
     public function doLoad($path)
     {
-        ob_start();
-        if ( ! file_exists($path)) {
+        \ob_start();
+        if (!\file_exists($path)) {
             $contents = $path;
-            $path = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'dparser_' . microtime();
+            $path = \sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'dparser_' . \microtime();
 
-            file_put_contents($path, $contents);
+            \file_put_contents($path, $contents);
         }
 
         include($path);
 
         // Fix #1569. Need to check if it's still all valid
-        $contents = ob_get_clean(); //iconv("UTF-8", "UTF-8", ob_get_clean());
+        $contents = \ob_get_clean(); //iconv("UTF-8", "UTF-8", ob_get_clean());
 
         return $contents;
     }
@@ -140,14 +139,13 @@ abstract class Doctrine_Parser
      *
      * @param string $data
      * @param string $path
-     * @return void
+     * @return int|string|bool
      */
     public function doDump($data, $path = null)
     {
       if ($path !== null) {
-            return file_put_contents($path, $data);
-        } else {
-            return $data;
+            return \file_put_contents($path, $data);
         }
+        return $data;
     }
 }
