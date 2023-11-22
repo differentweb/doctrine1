@@ -456,10 +456,9 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      *
      * @return integer
      */
-    #[\ReturnTypeWillChange]
-    public function count()
+    public function count(): int
     {
-        return count($this->data);
+        return \count($this->data);
     }
 
     /**
@@ -811,12 +810,11 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     /**
      * Populate a Doctrine_Collection from an array of data
      *
-     * @param string $array
+     * @param array $array
      * @return void
      */
     public function fromArray($array, $deep = true)
     {
-        $data = array();
         foreach ($array as $rowKey => $row) {
             $this[$rowKey]->fromArray($row, $deep);
         }
@@ -1061,8 +1059,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      *
      * @return Iterator
      */
-    #[\ReturnTypeWillChange]
-    public function getIterator()
+    public function getIterator(): ArrayIterator
     {
         $data = $this->data;
         return new ArrayIterator($data);
