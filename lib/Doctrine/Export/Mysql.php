@@ -646,6 +646,9 @@ class Doctrine_Export_Mysql extends Doctrine_Export
                 ? 'NULL'
                 : $this->conn->quote($field['default'], $fieldType));
             //$default = ' DEFAULT ' . $this->conn->quote($field['default'], $field['type']);
+        } elseif ($field['type'] === 'timestamp' && isset($field['notnull']) && $field['notnull']) {
+            # fix per non fargli finire dentro 0000
+            $default = ' DEFAULT CURRENT_TIMESTAMP';
         }
 
         return $default;
