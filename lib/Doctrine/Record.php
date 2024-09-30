@@ -1673,7 +1673,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      * @param string $name
      * @return void
      */
-    public function __unset($name)
+    public function __unset($name): void
     {
         if (array_key_exists($name, $this->_data)) {
             $this->_data[$name] = array();
