@@ -87,11 +87,11 @@ abstract class Doctrine_Access extends Doctrine_Locator_Injectable implements Ar
      * Remove key from data
      *
      * @param   string $name
-     * @return  bool
+     * @return  void
      */
-    public function __unset($name): bool
+    public function __unset($name): void
     {
-        return $this->remove($name);
+        $this->remove($name);
     }
 
     /**
