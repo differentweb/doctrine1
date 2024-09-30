@@ -48,12 +48,17 @@ class Doctrine_UnitTestCase extends UnitTestCase
     protected $generic = false;
     protected $conn;
     protected $adapter;
+    /** @var Doctrine_Export */
     protected $export;
     protected $expr;
     protected $dataDict;
     protected $transaction;
     protected $_name;
-
+    protected $query;
+    protected $profiler;
+    protected $import;
+    protected $sequence;
+    protected $exc;
 
     protected $init = false;
 
@@ -211,6 +216,7 @@ class Doctrine_UnitTestCase extends UnitTestCase
             }
         }
     }
+
     public function prepareTables() {
         foreach($this->tables as $name) {
             $name = ucwords($name);
@@ -225,6 +231,7 @@ class Doctrine_UnitTestCase extends UnitTestCase
         $this->conn->export->exportClasses($this->tables);
         $this->objTable = $this->connection->getTable('User');
     }
+
     public function prepareData()
     {
         $groups = new Doctrine_Collection($this->connection->getTable('Group'));

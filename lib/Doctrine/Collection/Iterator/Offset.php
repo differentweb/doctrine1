@@ -32,6 +32,8 @@
  */
 class Doctrine_Collection_Iterator_Offset extends Doctrine_Collection_Iterator
 {
-    public function valid()
-    { }
+    public function valid(): bool
+    {
+        throw new Doctrine_Exception('Not yet implemented');
+    }
 }

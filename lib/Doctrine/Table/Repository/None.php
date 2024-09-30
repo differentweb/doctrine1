@@ -62,7 +62,7 @@ class Doctrine_Table_Repository_None extends Doctrine_Table_Repository implement
      *
      * @return integer                      the number of records this registry has
      */
-    public function count()
+    public function count(): int
     {
         return 0;
     }

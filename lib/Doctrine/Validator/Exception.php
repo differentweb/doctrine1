@@ -51,14 +51,12 @@ class Doctrine_Validator_Exception extends Doctrine_Exception implements Countab
         return $this->invalid;
     }
 
-    #[\ReturnTypeWillChange]
-    public function getIterator()
+    public function getIterator(): Traversable
     {
         return new ArrayIterator($this->invalid);
     }
 
-    #[\ReturnTypeWillChange]
-    public function count()
+    public function count(): int
     {
         return count($this->invalid);
     }
