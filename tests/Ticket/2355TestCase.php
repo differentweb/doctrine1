@@ -30,8 +30,14 @@
  * @since       1.0
  * @version     $Revision$
  */
-class Doctrine_Ticket_2355_TestCase extends Doctrine_UnitTestCase 
+class Doctrine_Ticket_2355_TestCase extends Doctrine_UnitTestCase
 {
+    public function setUp()
+    {
+        Doctrine_Manager::getInstance()->reset();
+        parent::setUp();
+    }
+
     public function prepareTables()
     {
         $this->tables[] = 'News';
@@ -157,7 +163,7 @@ class Episode extends Doctrine_Record
 
 
         $this->index('episode', array(
-             'fields' => 
+             'fields' =>
              array(
               0 => 'season',
               1 => 'number',

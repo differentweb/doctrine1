@@ -145,7 +145,7 @@ class Doctrine_Adapter_Mock implements Doctrine_Adapter_Interface, Countable
 
         $e    = $this->_exception;
 
-        if ( ! empty($e)) {
+        if (! empty($e)) {
             $name = $e[0];
 
             $this->_exception = array();
@@ -192,7 +192,7 @@ class Doctrine_Adapter_Mock implements Doctrine_Adapter_Interface, Countable
 
         $e    = $this->_exception;
 
-        if ( ! empty($e)) {
+        if (! empty($e)) {
             $name = $e[0];
 
             $this->_exception = array();
@@ -238,8 +238,7 @@ class Doctrine_Adapter_Mock implements Doctrine_Adapter_Interface, Countable
      *
      * @return integer $count
      */
-    #[\ReturnTypeWillChange]
-    public function count()
+    public function count(): int
     {
         return count($this->_queries);
     }
@@ -281,15 +280,11 @@ class Doctrine_Adapter_Mock implements Doctrine_Adapter_Interface, Countable
         }
     }
 
-    public function errorCode()
-    { }
+    public function errorCode() {}
 
-    public function errorInfo()
-    { }
+    public function errorInfo() {}
 
-    public function setAttribute($attribute, $value)
-    { }
+    public function setAttribute($attribute, $value) {}
 
-    public function sqliteCreateFunction()
-    { }
+    public function sqliteCreateFunction() {}
 }
