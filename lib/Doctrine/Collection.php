@@ -342,9 +342,9 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      * Removes a specified collection element
      *
      * @param mixed $key
-     * @return bool
+     * @return mixed
      */
-    public function remove($key): bool
+    public function remove($key): mixed
     {
         $removed = $this->data[$key];
 
