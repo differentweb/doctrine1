@@ -133,7 +133,7 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * @see Doctrine_Connection_UnitOfWork
      * @see Doctrine_Formatter
      */
-    private $modules = array(
+    protected $modules = array(
         'transaction' => false,
         'expression'  => false,
         'dataDict'    => false,
