@@ -1827,11 +1827,16 @@ abstract class Doctrine_Query_Abstract
      */
     public function groupBy($groupby)
     {
-        $orderbyDqlPart = "";
         if (\strlen($groupby) > 0 && $this->_hasDqlQueryPart("orderby")) {
-            $orderbyDqlPart = ", " . \str_replace([" asc", " desc", " ASC", " DESC"], "", \implode(", ", $this->_dqlParts["orderby"]));
+            $explodedGroupBy = \explode(", ", $groupby);
+            foreach ($this->_dqlParts["orderby"] as $orderBy) {
+                $tmp = \str_replace([" asc", " desc", " ASC", " DESC"], "", $orderBy);
+                if (!\in_array($tmp, $explodedGroupBy)) {
+                    $groupby .= ", {$tmp}";
+                }
+            }
         }
-        return $this->_addDqlQueryPart('groupby', "{$groupby}{$orderbyDqlPart}");
+        return $this->_addDqlQueryPart('groupby', $groupby);
     }
 
     /**
