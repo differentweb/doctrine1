@@ -934,11 +934,11 @@ class Doctrine_Connection_UnitOfWork extends Doctrine_Connection_Module
         $identifier = $table->getIdentifier();
         $seq = $table->sequenceName;
 
-        if (empty($seq) && !is_array($identifier) &&
+        if (empty($seq) && !\is_array($identifier) &&
             $table->getIdentifierType() != Doctrine_Core::IDENTIFIER_NATURAL) {
             $id = false;
             if ($record->$identifier == null) { 
-                if (($driver = strtolower($this->conn->getDriverName())) == 'pgsql') {
+                if (($driver = \strtolower($this->conn->getDriverName())) == 'pgsql') {
                     $seq = $table->getTableName() . '_' . $table->getColumnName($identifier);
                 } elseif ($driver == 'oracle' || $driver == 'mssql') {
                     $seq = $table->getTableName();

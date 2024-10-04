@@ -1402,7 +1402,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         $subquery .= $this->_conn->quoteIdentifier($primaryKey);
 
         // pgsql & oracle need the order by fields to be preserved in select clause
-        if ($driverName == 'pgsql' || $driverName == 'oracle' || $driverName == 'oci' || $driverName == 'oci8' || $driverName == 'mssql' || $driverName == 'odbc') {
+        if (\in_array('mysql', ['pgsql', 'oracle', 'oci', 'oci8', 'mssql', 'odbc'])) {
             foreach ($this->_sqlParts['orderby'] as $part) {
                 // Remove identifier quoting if it exists
                 $e = $this->_tokenizer->bracketExplode($part, ' ');
@@ -1618,15 +1618,15 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
             $this->clear();
         }
 
-        $query = trim($query);
-        $query = str_replace("\r", "\n", str_replace("\r\n", "\n", $query));
-        $query = str_replace("\n", ' ', $query);
+        $query = \trim($query);
+        $query = \str_replace("\r", "\n", \str_replace("\r\n", "\n", $query));
+        $query = \str_replace("\n", ' ', $query);
 
         $parts = $this->_tokenizer->tokenizeQuery($query);
 
         foreach ($parts as $partName => $subParts) {
-            $subParts = trim($subParts);
-            $partName = strtolower($partName);
+            $subParts = \trim($subParts);
+            $partName = \strtolower($partName);
             switch ($partName) {
                 case 'create':
                     $this->_type = self::CREATE;
@@ -2070,7 +2070,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
             // We need to do some magic in select fields if the query contain anything in having clause
             $selectFields = $pkFields;
 
-            if ( ! empty($having)) {
+            if (! empty($having)) {
                 // For each field defined in select clause
                 foreach ($this->_sqlParts['select'] as $field) {
                     // We only include aggregate expressions to count query
