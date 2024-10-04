@@ -1743,7 +1743,7 @@ abstract class Doctrine_Query_Abstract
     {
         if (\is_array($key)) {
             foreach ($key as $k => $v) {
-                $this->set($k, '?', [$));
+                $this->set($k, '?', [$v]);
             }
             return $this;
         } else {
