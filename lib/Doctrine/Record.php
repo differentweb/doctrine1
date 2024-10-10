@@ -1440,7 +1440,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
      */
     public function set($fieldName, $value, $load = true)
     {
-        if ($this->_table->getAttribute(Doctrine_Core::ATTR_AUTO_ACCESSOR_OVERRIDE) || $hasMutator = $this->hasMutator($fieldName)) {
+        if ($hasMutator = $this->hasMutator($fieldName) || $this->_table->getAttribute(Doctrine_Core::ATTR_AUTO_ACCESSOR_OVERRIDE)) {
             $componentName = $this->_table->getComponentName();
             $mutator = $hasMutator ? $this->getMutator($fieldName) : 'set' . Doctrine_Inflector::classify($fieldName);
 
