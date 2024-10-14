@@ -1494,7 +1494,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         $subquery .= (!empty($having)) ?  ' HAVING '   . \implode(' AND ', $having) : '';
         $subquery .= (!empty($orderby)) ? ' ORDER BY ' . \implode(', ', $orderby)  : '';
 
-        if (($driverName == 'mysql' || $driverName == 'oci' || $driverName == 'oci8') && $this->_isOrderedByJoinedColumn()) {
+        if (($driverName == 'oracle' || $driverName == 'oci' || $driverName == 'oci8') && $this->_isOrderedByJoinedColumn()) {
             // When using "ORDER BY x.foo" where x.foo is a column of a joined table,
             // we may get duplicate primary keys because all columns in ORDER BY must appear
             // in the SELECT list when using DISTINCT. Hence we need to filter out the
