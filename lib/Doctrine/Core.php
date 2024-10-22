@@ -493,14 +493,14 @@ class Doctrine_Core
      *
      * @var array
      */
-    private static $_loadedModelFiles = array();
+    private static $_loadedModelFiles = [];
 
     /**
      * Array of all the loaded validators
      *
      * @var array
      */
-    private static $_validators = array();
+    private static $_validators = [];
 
     /**
      * Path to the models directory
@@ -640,7 +640,7 @@ class Doctrine_Core
         $modelLoading = $modelLoading === null ? $manager->getAttribute(Doctrine_Core::ATTR_MODEL_LOADING) : $modelLoading;
         $classPrefix = $classPrefix === null ? $manager->getAttribute(Doctrine_Core::ATTR_MODEL_CLASS_PREFIX) : $classPrefix;
 
-        $loadedModels = array();
+        $loadedModels = [];
 
         if ($directory !== null) {
             foreach ((array) $directory as $dir) {
@@ -653,26 +653,26 @@ class Doctrine_Core
                                                         RecursiveIteratorIterator::LEAVES_ONLY);
 
                 foreach ($it as $file) {
-                    $e = explode('.', $file->getFileName());
+                    $e = \explode('.', $file->getFileName());
 
-                    if (end($e) === 'php' && strpos($file->getFileName(), '.inc') === false) {
+                    if (\end($e) === 'php' && \strpos($file->getFileName(), '.inc') === false) {
                         if ($modelLoading == Doctrine_Core::MODEL_LOADING_PEAR) {
-                            $className = str_replace($dir . DIRECTORY_SEPARATOR, null, $file->getPathName());
-                            $className = str_replace(DIRECTORY_SEPARATOR, '_', $className);
-                            $className = substr($className, 0, strpos($className, '.'));
+                            $className = \str_replace($dir . DIRECTORY_SEPARATOR, "", $file->getPathName());
+                            $className = \str_replace(DIRECTORY_SEPARATOR, '_', $className);
+                            $className = \substr($className, 0, \strpos($className, '.'));
                         } else {
                             $className = $e[0];
                         }
 
-                        if ($classPrefix && $classPrefix != substr($className, 0, strlen($classPrefix))) {
+                        if ($classPrefix && $classPrefix != \substr($className, 0, \strlen($classPrefix))) {
                             $className = $classPrefix . $className;
                         }
 
-                        if ( ! class_exists($className, false)) {
+                        if (!\class_exists($className, false)) {
                             if ($modelLoading == Doctrine_Core::MODEL_LOADING_CONSERVATIVE || $modelLoading == Doctrine_Core::MODEL_LOADING_PEAR) {
                                 self::loadModel($className, $file->getPathName());
-
                                 $loadedModels[$className] = $className;
+
                             } else {
                                 $declaredBefore = get_declared_classes();
                                 require_once($file->getPathName());
@@ -699,9 +699,9 @@ class Doctrine_Core
 
                                 $previouslyLoaded = array_keys(self::$_loadedModelFiles, $file->getPathName());
 
-                                if ( ! empty($previouslyLoaded)) {
-                                    $previouslyLoaded = array_combine(array_values($previouslyLoaded), array_values($previouslyLoaded));
-                                    $loadedModels = array_merge($loadedModels, $previouslyLoaded);
+                                if (!empty($previouslyLoaded)) {
+                                    $previouslyLoaded = \array_combine(\array_values($previouslyLoaded), \array_values($previouslyLoaded));
+                                    $loadedModels = \array_merge($loadedModels, $previouslyLoaded);
                                 }
                             }
                         } else if (self::isValidModelClass($className)) {
@@ -712,7 +712,7 @@ class Doctrine_Core
             }
         }
 
-        asort($loadedModels);
+        \asort($loadedModels);
 
         return $loadedModels;
     }
@@ -729,8 +729,8 @@ class Doctrine_Core
     public static function getLoadedModels($classes = null)
     {
         if ($classes === null) {
-            $classes = get_declared_classes();
-            $classes = array_merge($classes, array_keys(self::$_loadedModelFiles));
+            $classes = \get_declared_classes();
+            $classes = \array_merge($classes, \array_keys(self::$_loadedModelFiles));
         }
 
         return self::filterInvalidModels($classes);
@@ -750,17 +750,17 @@ class Doctrine_Core
         $models = self::filterInvalidModels($models);
 
         foreach ($models as $model) {
-            $declaredBefore = get_declared_classes();
+            $declaredBefore = \get_declared_classes();
             Doctrine_Core::getTable($model);
 
-            $declaredAfter = get_declared_classes();
+            $declaredAfter = \get_declared_classes();
             if (defined('HHVM_VERSION')) {
                 // on HHVM get_declared_classes() returns in a different order, array_diff() works, so we have to use it
                 $foundClasses = array_diff($declaredAfter, $declaredBefore);
             } else {
                 // Using array_slice because array_diff is broken is some PHP versions
                 // https://bugs.php.net/bug.php?id=47643
-                $foundClasses = array_slice($declaredAfter, count($declaredBefore) - 1);
+                $foundClasses = \array_slice($declaredAfter, \count($declaredBefore) - 1);
             }
             foreach ($foundClasses as $class) {
                 if (self::isValidModelClass($class)) {
@@ -783,10 +783,10 @@ class Doctrine_Core
      */
     public static function filterInvalidModels($classes)
     {
-        $validModels = array();
+        $validModels = [];
 
         foreach ((array) $classes as $name) {
-            if (self::isValidModelClass($name) && ! in_array($name, $validModels)) {
+            if (self::isValidModelClass($name) && !\in_array($name, $validModels)) {
                 $validModels[] = $name;
             }
         }
@@ -804,10 +804,10 @@ class Doctrine_Core
     public static function isValidModelClass($class)
     {
         if ($class instanceof Doctrine_Record) {
-            $class = get_class($class);
+            $class = \get_class($class);
         }
 
-        if (is_string($class) && class_exists($class)) {
+        if (\is_string($class) && \class_exists($class)) {
             $class = new ReflectionClass($class);
         }
 
@@ -815,8 +815,7 @@ class Doctrine_Core
             // Skip the following classes
             // - abstract classes
             // - not a subclass of Doctrine_Record
-            if ( ! $class->isAbstract() && $class->isSubclassOf('Doctrine_Record')) {
-
+            if (!$class->isAbstract() && $class->isSubclassOf('Doctrine_Record')) {
                 return true;
             }
         }
@@ -855,7 +854,7 @@ class Doctrine_Core
      * @return boolean
      * @throws Exception
      */
-    public static function generateModelsFromDb($directory, array $connections = array(), array $options = array())
+    public static function generateModelsFromDb($directory, array $connections = [], array $options = [])
     {
         return Doctrine_Manager::connection()->import->importSchema($directory, $connections, $options);
     }
@@ -869,20 +868,20 @@ class Doctrine_Core
      * @param array  $options Array of options
      * @return void
      */
-    public static function generateYamlFromDb($yamlPath, array $connections = array(), array $options = array())
+    public static function generateYamlFromDb($yamlPath, array $connections = [], array $options = [])
     {
         $directory = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'tmp_doctrine_models';
 
         $options['generateBaseClasses'] = isset($options['generateBaseClasses']) ? $options['generateBaseClasses']:false;
         $result = Doctrine_Core::generateModelsFromDb($directory, $connections, $options);
 
-        if ( empty($result) && ! is_dir($directory)) {
+        if (empty($result) && !is_dir($directory)) {
             throw new Doctrine_Exception('No models generated from your databases');
         }
 
         $export = new Doctrine_Export_Schema();
 
-        $result = $export->exportSchema($yamlPath, 'yml', $directory, array(), Doctrine_Core::MODEL_LOADING_AGGRESSIVE);
+        $result = $export->exportSchema($yamlPath, 'yml', $directory, [], Doctrine_Core::MODEL_LOADING_AGGRESSIVE);
 
         Doctrine_Lib::removeDirectories($directory);
 
@@ -897,7 +896,7 @@ class Doctrine_Core
      * @param array  $options Array of options to pass to the schema importer
      * @return void
      */
-    public static function generateModelsFromYaml($yamlPath, $directory, $options = array())
+    public static function generateModelsFromYaml($yamlPath, $directory, $options = [])
     {
         $import = new Doctrine_Import_Schema();
         $import->setOptions($options);
@@ -978,7 +977,7 @@ class Doctrine_Core
      * @param string $specifiedConnections Array of connections you wish to create the database for
      * @return void
      */
-    public static function createDatabases($specifiedConnections = array())
+    public static function createDatabases($specifiedConnections = [])
     {
         return Doctrine_Manager::getInstance()->createDatabases($specifiedConnections);
     }
@@ -989,7 +988,7 @@ class Doctrine_Core
      * @param string $specifiedConnections Array of connections you wish to drop the database for
      * @return void
      */
-    public static function dropDatabases($specifiedConnections = array())
+    public static function dropDatabases($specifiedConnections = [])
     {
         return Doctrine_Manager::getInstance()->dropDatabases($specifiedConnections);
     }
@@ -1005,7 +1004,7 @@ class Doctrine_Core
     {
         $data = new Doctrine_Data();
 
-        return $data->exportData($yamlPath, 'yml', array(), $individualFiles);
+        return $data->exportData($yamlPath, 'yml', [], $individualFiles);
     }
 
     /**
@@ -1020,7 +1019,7 @@ class Doctrine_Core
     {
         $data = new Doctrine_Data();
 
-        return $data->importData($yamlPath, 'yml', array(), $append, $charset);
+        return $data->importData($yamlPath, 'yml', [], $append, $charset);
     }
 
     /**
@@ -1117,7 +1116,7 @@ class Doctrine_Core
      * @throws Doctrine_Exception
      * @return void
      */
-    public static function compile($target = null, $includedDrivers = array())
+    public static function compile($target = null, $includedDrivers = [])
     {
         return Doctrine_Compiler::compile($target, $includedDrivers);
     }
@@ -1191,13 +1190,12 @@ class Doctrine_Core
             return false;
         }
 
-        $extensions = Doctrine_Manager::getInstance()
-            ->getExtensions();
+        $extensions = Doctrine_Manager::getInstance()->getExtensions();
 
         foreach ($extensions as $name => $path) {
-            $class = $path . DIRECTORY_SEPARATOR . str_replace('_', DIRECTORY_SEPARATOR, $className) . '.php';
+            $class = $path . DIRECTORY_SEPARATOR . \str_replace('_', DIRECTORY_SEPARATOR, $className) . '.php';
 
-            if (file_exists($class)) {
+            if (\file_exists($class)) {
                 require $class;
 
                 return true;
@@ -1217,7 +1215,7 @@ class Doctrine_Core
      */
     public static function dump($var, $output = true, $indent = "")
     {
-        $ret = array();
+        $ret = [];
         switch (gettype($var)) {
             case 'array':
                 $ret[] = 'Array(';
