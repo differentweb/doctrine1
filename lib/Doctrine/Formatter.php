@@ -69,9 +69,9 @@ class Doctrine_Formatter extends Doctrine_Connection_Module
      * This method takes care of that conversion
      *
      * @param array $item
-     * @return int|array
+     * @return int|array|null
      */
-    public function convertBooleans($item): int|array
+    public function convertBooleans($item)
     {
         if (is_array($item)) {
             foreach ($item as $k => $value) {

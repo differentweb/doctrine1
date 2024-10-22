@@ -2137,7 +2137,7 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         if ($this->_resultCache) {
             $conn = $this->getConnection();
             $cacheDriver = $this->getResultCacheDriver();
-            $hash = $this->getResultCacheHash($params) . '_count';
+            $hash = "{$this->getResultCacheHash($params)}_count";
             $cached = ($this->_expireResultCache) ? false : $cacheDriver->fetch($hash);
 
             if ($cached === false) {
