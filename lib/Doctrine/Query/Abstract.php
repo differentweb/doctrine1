@@ -596,7 +596,7 @@ abstract class Doctrine_Query_Abstract
      *
      * @return array Parameters array
      */
-    public function getCountQueryParams($params = [])
+    public function getCountQueryParams($params = []): array
     {
         if (!\is_array($params)) {
             $params = [$params];

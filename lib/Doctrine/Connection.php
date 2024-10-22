@@ -765,9 +765,9 @@ abstract class Doctrine_Connection extends Doctrine_Configurable implements Coun
      * This method takes care of that conversion
      *
      * @param array $item
-     * @return void
+     * @return array
      */
-    public function convertBooleans($item)
+    public function convertBooleans($item): array
     {
         return $this->formatter->convertBooleans($item);
     }

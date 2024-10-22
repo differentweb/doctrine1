@@ -1888,21 +1888,21 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
         $column = false;
 
         if (isset($mapWith)) {
-            $terms = explode('.', $mapWith);
+            $terms = \explode('.', $mapWith);
 
-            if (count($terms) == 1) {
+            if (\count($terms) == 1) {
                 $indexBy = $terms[0];
-            } else if (count($terms) == 2) {
+            } elseif (\count($terms) == 2) {
                 $column = true;
                 $indexBy = $terms[1];
             }
-        } else if ($table->getBoundQueryPart('indexBy') !== null) {
+        } elseif ($table->getBoundQueryPart('indexBy') !== null) {
             $indexBy = $table->getBoundQueryPart('indexBy');
         }
 
         if ($indexBy !== null) {
             if ($column && ! $table->hasColumn($table->getColumnName($indexBy))) {
-                throw new Doctrine_Query_Exception("Couldn't use key mapping. Column " . $indexBy . " does not exist.");
+                throw new Doctrine_Query_Exception("Couldn't use key mapping. Column {$indexBy} does not exist.");
             }
 
             $this->_queryComponents[$componentAlias]['map'] = $indexBy;

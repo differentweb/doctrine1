@@ -1465,7 +1465,7 @@ abstract class Doctrine_Record extends Doctrine_Record_Abstract implements Count
                 if ($id !== null && $type !== 'object') {
                     $value = $id;
                 }
-            } elseif ($value === "" && \in_array(\strtolower($type), ["int", "integer", "bigint"])) {
+            } elseif (($value === "" || $value === false) && \in_array(\strtolower($type), ["int", "integer", "bigint"])) {
                 $value = null;
             }
 
