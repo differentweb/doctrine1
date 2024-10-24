@@ -103,7 +103,7 @@ class Doctrine_Connection_Pgsql extends Doctrine_Connection_Common
      * @param array $item
      * @return int|array
      */
-    public function convertBooleans($item): int|array
+    public function convertBooleans($item)
     {
         if (is_array($item)) {
             foreach ($item as $key => $value) {
