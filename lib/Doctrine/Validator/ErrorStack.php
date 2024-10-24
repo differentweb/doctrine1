@@ -38,14 +38,14 @@ class Doctrine_Validator_ErrorStack extends Doctrine_Access implements Countable
      *
      * @var array
      */
-    protected $_errors = array();
+    protected $_errors = [];
 
     /**
      * Array of validators that failed
      *
      * @var array
      */
-    protected $_validators = array();
+    protected $_validators = [];
 
     /**
      * Get model class name for the error stack
@@ -89,14 +89,16 @@ class Doctrine_Validator_ErrorStack extends Doctrine_Access implements Countable
      *
      * @param string $fieldName
      */
-    public function remove($fieldName)
+    public function remove($fieldName): mixed
     {
         if (isset($this->_errors[$fieldName])) {
             unset($this->_errors[$fieldName]);
             if (isset($this->_validators[$fieldName])) {
                 unset($this->_validators[$fieldName]);
             }
+            return $fieldName;
         }
+        return false;
     }
 
     /**
@@ -128,9 +130,9 @@ class Doctrine_Validator_ErrorStack extends Doctrine_Access implements Countable
      * @param string $fieldName
      * @return boolean
      */
-    public function contains($fieldName)
+    public function contains($fieldName): bool
     {
-        return array_key_exists($fieldName, $this->_errors);
+        return \array_key_exists($fieldName, $this->_errors);
     }
 
     /**
@@ -140,8 +142,8 @@ class Doctrine_Validator_ErrorStack extends Doctrine_Access implements Countable
      */
     public function clear()
     {
-        $this->_errors = array();
-        $this->_validators = array();
+        $this->_errors = [];
+        $this->_validators = [];
     }
 
     /**
