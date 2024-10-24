@@ -342,9 +342,9 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      * Removes a specified collection element
      *
      * @param mixed $key
-     * @return boolean
+     * @return mixed
      */
-    public function remove($key)
+    public function remove($key): mixed
     {
         $removed = $this->data[$key];
 
@@ -356,9 +356,9 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      * Whether or not this collection contains a specified element
      *
      * @param mixed $key                    the key of the element
-     * @return boolean
+     * @return bool
      */
-    public function contains($key)
+    public function contains($key): bool
     {
         return isset($this->data[$key]);
     }
@@ -456,10 +456,9 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      *
      * @return integer
      */
-    #[\ReturnTypeWillChange]
-    public function count()
+    public function count(): int
     {
-        return count($this->data);
+        return \count($this->data);
     }
 
     /**
@@ -811,12 +810,11 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
     /**
      * Populate a Doctrine_Collection from an array of data
      *
-     * @param string $array
+     * @param array $array
      * @return void
      */
     public function fromArray($array, $deep = true)
     {
-        $data = array();
         foreach ($array as $rowKey => $row) {
             $this[$rowKey]->fromArray($row, $deep);
         }
@@ -1061,8 +1059,7 @@ class Doctrine_Collection extends Doctrine_Access implements Countable, Iterator
      *
      * @return Iterator
      */
-    #[\ReturnTypeWillChange]
-    public function getIterator()
+    public function getIterator(): ArrayIterator
     {
         $data = $this->data;
         return new ArrayIterator($data);

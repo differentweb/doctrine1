@@ -1,4 +1,5 @@
 <?php
+
 /**
  *  $Id$
  *
@@ -38,7 +39,7 @@ class Doctrine_Locator implements Countable, IteratorAggregate
     /**
      * @var array $_resources       an array of bound resources
      */
-    protected $_resources = array();
+    protected $_resources = [];
 
     /**
      * @var string $_classPrefix    the default class prefix
@@ -48,7 +49,7 @@ class Doctrine_Locator implements Countable, IteratorAggregate
     /**
      * @var array $_instances       a pool of this object's instances
      */
-    protected static $_instances = array();
+    protected static $_instances = [];
 
     /**
      * Constructor. Provide an array of resources to set initial contents.
@@ -143,17 +144,17 @@ class Doctrine_Locator implements Countable, IteratorAggregate
         } else {
             $className = $name;
 
-            if ( ! class_exists($className)) {
+            if (!\class_exists($className)) {
 
-                $name = explode('.', $name);
+                $name = \explode('.', $name);
                 foreach ($name as &$v) {
-                    $v = ucfirst(strtolower($v));
+                    $v = \ucfirst(\strtolower($v));
                 }
-                $name = implode('_', $name);
+                $name = \implode('_', $name);
 
                 $className = $this->_classPrefix . $name;
 
-                if ( ! class_exists($className)) {
+                if (!\class_exists($className)) {
                     throw new Doctrine_Locator_Exception("Couldn't locate resource " . $className);
                 }
             }
@@ -178,9 +179,9 @@ class Doctrine_Locator implements Countable, IteratorAggregate
      * @see Countable interface
      * @return integer              the number of resources
      */
-    public function count()
+    public function count(): int
     {
-        return count($this->_resources);
+        return \count($this->_resources);
     }
 
     /**
@@ -191,7 +192,7 @@ class Doctrine_Locator implements Countable, IteratorAggregate
      * @return ArrayIterator    an iterator for iterating through
      *                          all bound resources
      */
-    public function getIterator()
+    public function getIterator(): Traversable
     {
         return new ArrayIterator($this->_resources);
     }

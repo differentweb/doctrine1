@@ -1102,22 +1102,22 @@ class Doctrine_Export extends Doctrine_Connection_Module
 
     public function exportSortedClassesSql($classes, $groupByConnection = true)
     {
-         $connections = array();
+         $connections = [];
          foreach ($classes as $class) {
              $connection = Doctrine_Manager::getInstance()->getConnectionForComponent($class);
              $connectionName = $connection->getName();
 
              if ( ! isset($connections[$connectionName])) {
-                 $connections[$connectionName] = array(
-                     'create_tables'    => array(),
-                     'create_sequences' => array(),
-                     'create_indexes'   => array(),
-                     'alters'           => array(),
-                     'create_triggers'  => array(),
-                 );
+                 $connections[$connectionName] = [
+                     'create_tables'    => [],
+                     'create_sequences' => [],
+                     'create_indexes'   => [],
+                     'alters'           => [],
+                     'create_triggers'  => [],
+                 ];
              }
 
-             $sql = $connection->export->exportClassesSql(array($class));
+             $sql = $connection->export->exportClassesSql([$class]);
 
              // Build array of all the creates
              // We need these to happen first
@@ -1232,13 +1232,13 @@ class Doctrine_Export extends Doctrine_Connection_Module
      * @throws Doctrine_Connection_Exception    if some error other than Doctrine_Core::ERR_ALREADY_EXISTS
      *                                          occurred during the create table operation
      * @param array $classes
-     * @return void
+     * @return array
      */
-    public function exportClassesSql(array $classes)
+    public function exportClassesSql(array $classes): array
     {
         $models = Doctrine_Core::filterInvalidModels($classes);
         
-        $sql = array();
+        $sql = [];
         
         foreach ($models as $name) {
             $record = new $name();
@@ -1250,7 +1250,7 @@ class Doctrine_Export extends Doctrine_Connection_Module
 
                 $query = $this->conn->export->createTableSql($data['tableName'], $data['columns'], $data['options']);
 
-                $sql = array_merge($sql, (array) $query);
+                $sql = \array_merge($sql, (array) $query);
             }
 
             // Don't export the tables with attribute EXPORT_NONE'
@@ -1262,14 +1262,14 @@ class Doctrine_Export extends Doctrine_Connection_Module
 
             $query = $this->conn->export->createTableSql($data['tableName'], $data['columns'], $data['options']);
 
-            if (is_array($query)) {
-                $sql = array_merge($sql, $query);
+            if (\is_array($query)) {
+                $sql = \array_merge($sql, $query);
             } else {
                 $sql[] = $query;
             }
 
             if ($table->getAttribute(Doctrine_Core::ATTR_EXPORT) & Doctrine_Core::EXPORT_PLUGINS) {
-                $sql = array_merge($sql, $this->exportGeneratorsSql($table));
+                $sql = \array_merge($sql, $this->exportGeneratorsSql($table));
             }
             
             // DC-474: Remove dummy $record from repository to not pollute it during export
@@ -1277,9 +1277,9 @@ class Doctrine_Export extends Doctrine_Connection_Module
             unset($record);
         }
         
-        $sql = array_unique($sql);
+        $sql = \array_unique($sql);
         
-        rsort($sql);
+        \rsort($sql);
 
         return $sql;
     }
@@ -1351,9 +1351,9 @@ class Doctrine_Export extends Doctrine_Connection_Module
      * @throws Doctrine_Connection_Exception    if some error other than Doctrine_Core::ERR_ALREADY_EXISTS
      *                                          occurred during the create table operation
      * @param string $directory     optional directory parameter
-     * @return void
+     * @return array
      */
-    public function exportSql($directory = null)
+    public function exportSql($directory = null): array
     {
         if ($directory !== null) {
             $models = Doctrine_Core::filterInvalidModels(Doctrine_Core::loadModels($directory));

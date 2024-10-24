@@ -35,7 +35,8 @@
  */
 abstract class Doctrine_Hydrator_Graph extends Doctrine_Hydrator_Abstract
 {
-    protected $_tables = array();
+    protected $_rootAlias = null;
+    protected $_tables = [];
 
     /**
      * Gets the custom field used for indexing for the specified component alias.
@@ -48,6 +49,9 @@ abstract class Doctrine_Hydrator_Graph extends Doctrine_Hydrator_Abstract
         return isset($this->_queryComponents[$alias]['map']) ? $this->_queryComponents[$alias]['map'] : null;
     }
 
+    /**
+     * @return Doctrine_Collection|mixed
+     */
     public function hydrateResultSet($stmt)
     {
         // Used variables during hydration
@@ -58,32 +62,32 @@ abstract class Doctrine_Hydrator_Graph extends Doctrine_Hydrator_Abstract
         // if only one component is involved we can make our lives easier
         $isSimpleQuery = count($this->_queryComponents) <= 1;
         // Holds the resulting hydrated data structure
-        $result = array();
+        $result = [];
         // Holds array of record instances so we can call hooks on it
-        $instances = array();
+        $instances = [];
         // Holds hydration listeners that get called during hydration
-        $listeners = array();
+        $listeners = [];
         // Lookup map to quickly discover/lookup existing records in the result
-        $identifierMap = array();
+        $identifierMap = [];
         // Holds for each component the last previously seen element in the result set
-        $prev = array();
+        $prev = [];
         // holds the values of the identifier/primary key fields of components,
         // separated by a pipe '|' and grouped by component alias (r, u, i, ... whatever)
         // the $idTemplate is a prepared template. $id is set to a fresh template when
         // starting to process a row.
-        $id = array();
-        $idTemplate = array();
+        $id = [];
+        $idTemplate = [];
 
         // Initialize
         foreach ($this->_queryComponents as $dqlAlias => $data) {
             $componentName = $data['table']->getComponentName();
             $instances[$componentName] = $data['table']->getRecordInstance();
             $listeners[$componentName] = $data['table']->getRecordListener();
-            $identifierMap[$dqlAlias] = array();
+            $identifierMap[$dqlAlias] = [];
             $prev[$dqlAlias] = null;
             $idTemplate[$dqlAlias] = '';
         }
-        $cache = array();
+        $cache = [];
 
         $result = $this->getElementCollection($rootComponentName);
         if ($result instanceof Doctrine_Collection && $indexField = $this->_getCustomIndexField($rootAlias)) {
@@ -94,7 +98,7 @@ abstract class Doctrine_Hydrator_Graph extends Doctrine_Hydrator_Abstract
         }
 
         // Process result set
-        $cache = array();
+        $cache = [];
 
         $event = new Doctrine_Event(null, Doctrine_Event::HYDRATE, null);
 
@@ -127,7 +131,7 @@ abstract class Doctrine_Hydrator_Graph extends Doctrine_Hydrator_Abstract
             }
 
             $id = $idTemplate; // initialize the id-memory
-            $nonemptyComponents = array();
+            $nonemptyComponents = [];
             $rowData = $this->_gatherRowData($data, $cache, $id, $nonemptyComponents);
 
             if ($this->_hydrationMode == Doctrine_Core::HYDRATE_ON_DEMAND)  {
@@ -289,7 +293,7 @@ abstract class Doctrine_Hydrator_Graph extends Doctrine_Hydrator_Abstract
      */
     protected function _gatherRowData(&$data, &$cache, &$id, &$nonemptyComponents)
     {
-        $rowData = array();
+        $rowData = [];
 
         foreach ($data as $key => $value) {
             // Parse each column name only once. Cache the results.
@@ -306,11 +310,17 @@ abstract class Doctrine_Hydrator_Graph extends Doctrine_Hydrator_Abstract
                 $table = $this->_queryComponents[$cache[$key]['dqlAlias']]['table'];
                 $fieldName = $table->getFieldName($last);
                 $cache[$key]['fieldName'] = $fieldName;
+
+                if (isset($this->_queryComponents[$cache[$key]['dqlAlias']]['agg_field'][$last])) {
+                    $fieldName = $this->_queryComponents[$cache[$key]['dqlAlias']]['agg_field'][$last];
+                }
+
                 if ($table->isIdentifier($fieldName)) {
                     $cache[$key]['isIdentifier'] = true;
                 } else {
                   $cache[$key]['isIdentifier'] = false;
                 }
+
                 $type = $table->getTypeOfColumn($last);
                 if ($type == 'integer' || $type == 'string') {
                     $cache[$key]['isSimpleType'] = true;

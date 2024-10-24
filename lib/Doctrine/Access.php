@@ -89,33 +89,23 @@ abstract class Doctrine_Access extends Doctrine_Locator_Injectable implements Ar
      * @param   string $name
      * @return  void
      */
-    #[\ReturnTypeWillChange]
-    public function __unset($name)
+    public function __unset($name): void
     {
-        return $this->remove($name);
+        $this->remove($name);
     }
 
     /**
-     * Check if an offset axists
-     *
-     * @param   mixed $offset
-     * @return  boolean Whether or not this object contains $offset
+     * @return bool
      */
-    #[\ReturnTypeWillChange]
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return $this->contains($offset);
     }
 
     /**
-     * An alias of get()
-     *
-     * @see     get, __get
-     * @param   mixed $offset
      * @return  mixed
      */
-    #[\ReturnTypeWillChange]
-    public function offsetGet($offset)
+    public function offsetGet($offset): mixed
     {
         // array notation with no index was causing 'undefined variable: $offset' notices in php7,
         // for example:
@@ -127,17 +117,11 @@ abstract class Doctrine_Access extends Doctrine_Locator_Injectable implements Ar
     }
 
     /**
-     * Sets $offset to $value
-     *
-     * @see     set, __set
-     * @param   mixed $offset
-     * @param   mixed $value
      * @return  void
      */
-    #[\ReturnTypeWillChange]
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
-        if ( ! isset($offset)) {
+        if (!isset($offset)) {
             $this->add($value);
         } else {
             $this->set($offset, $value);
@@ -145,24 +129,20 @@ abstract class Doctrine_Access extends Doctrine_Locator_Injectable implements Ar
     }
 
     /**
-     * Unset a given offset
-     *
-     * @see   set, offsetSet, __set
-     * @param mixed $offset
+     * @return void
      */
-    #[\ReturnTypeWillChange]
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
-        return $this->remove($offset);
+        $this->remove($offset);
     }
 
     /**
      * Remove the element with the specified offset
      *
      * @param mixed $offset The offset to remove
-     * @return boolean True if removed otherwise false
+     * @return mixed True if removed otherwise false
      */
-    public function remove($offset)
+    public function remove($offset): mixed
     {
         throw new Doctrine_Exception('Remove is not supported for ' . get_class($this));
     }
@@ -191,20 +171,20 @@ abstract class Doctrine_Access extends Doctrine_Locator_Injectable implements Ar
     }
 
     /**
-     * Check if the specified offset exists 
-     * 
+     * Check if the specified offset exists
+     *
      * @param mixed $offset The offset to check
-     * @return boolean True if exists otherwise false
+     * @return bool True if exists otherwise false
      */
-    public function contains($offset)
+    public function contains($offset): bool
     {
         throw new Doctrine_Exception('Contains is not supported for ' . get_class($this));
     }
 
     /**
-     * Add the value  
-     * 
-     * @param mixed $value The value to add 
+     * Add the value
+     *
+     * @param mixed $value The value to add
      * @return void
      */
     public function add($value)

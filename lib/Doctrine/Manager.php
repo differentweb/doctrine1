@@ -274,7 +274,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
     /**
      * Opens a new connection and saves it to Doctrine_Manager->connections
      *
-     * @param PDO|Doctrine_Adapter_Interface $adapter   database driver
+     * @param array|string|PDO|Doctrine_Adapter_Interface $adapter   database driver
      * @param string $name                              name of the connection, if empty numeric key is used
      * @throws Doctrine_Manager_Exception               if trying to bind a connection with an existing name
      * @throws Doctrine_Manager_Exception               if trying to open connection for unknown driver
@@ -292,17 +292,17 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
             if ( ! isset($adapter[0])) {
                 throw new Doctrine_Manager_Exception('Empty data source name given.');
             }
-            $e = explode(':', $adapter[0]);
+            $schema = explode(':', $adapter[0]);
 
-            if ($e[0] == 'uri') {
-                $e[0] = 'odbc';
+            if ($schema[0] === 'uri') {
+                $schema[0] = 'odbc';
             }
 
             $parts['dsn']    = $adapter[0];
-            $parts['scheme'] = $e[0];
-            $parts['user']   = (isset($adapter[1])) ? $adapter[1] : null;
-            $parts['pass']   = (isset($adapter[2])) ? $adapter[2] : null;
-            $driverName = $e[0];
+            $parts['scheme'] = $schema[0];
+            $parts['user']   = $adapter[1] ?? null;
+            $parts['pass']   = $adapter[2] ?? null;
+            $driverName = $schema[0];
             $adapter = $parts;
         } else {
             $parts = $this->parseDsn($adapter);
@@ -329,7 +329,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
                 return $this->_connections[$name];
             }
         } else {
-            $name = $this->_index;
+            $name = (string) $this->_index;
             $this->_index++;
         }
 
@@ -352,11 +352,23 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
     /**
      * Parse a pdo style dsn in to an array of parts
      *
-     * @param array $dsn An array of dsn information
-     * @return array The array parsed
+     * @param string $dsn An array of dsn information
+     * @return array{
+     *     dsn: string,
+     *     scheme: string,
+     *     host: ?string,
+     *     user: ?string,
+     *     pass: ?string,
+     *     password: ?string,
+     *     port: ?string,
+     *     path: ?string,
+     *     query: ?string,
+     *     fragment: ?string,
+     *     unix_socket: ?string,
+     *   }
      * @todo package:dbal
      */
-    public function parsePdoDsn($dsn)
+    public function parsePdoDsn($dsn): array
     {
         $parts = array();
 
@@ -401,7 +413,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      * @param string $dsn
      * @return array $parts
      */
-    protected function _buildDsnPartsArray($dsn)
+    protected function _buildDsnPartsArray(string $dsn)
     {
         // fix sqlite dsn so that it will parse correctly
         $dsn = str_replace("////", "/", $dsn);
@@ -410,6 +422,10 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
 
         // silence any warnings
         $parts = @parse_url($dsn);
+
+        if ($parts === false) {
+            $parts = array();
+        }
 
         $names = array('dsn', 'scheme', 'host', 'port', 'user', 'pass', 'path', 'query', 'fragment');
 
@@ -433,7 +449,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      * @return array Parsed contents of DSN
      * @todo package:dbal
      */
-    public function parseDsn($dsn)
+    public function parseDsn(string $dsn)
     {
         $parts = $this->_buildDsnPartsArray($dsn);
 
@@ -638,8 +654,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      *
      * @return integer
      */
-    #[\ReturnTypeWillChange]
-    public function count()
+    public function count(): int
     {
         return count($this->_connections);
     }
@@ -649,8 +664,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      *
      * @return ArrayIterator
      */
-    #[\ReturnTypeWillChange]
-    public function getIterator()
+    public function getIterator(): \Traversable
     {
         return new ArrayIterator($this->_connections);
     }
@@ -664,7 +678,7 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
     public function getCurrentConnection()
     {
         $i = $this->_currIndex;
-        if ( ! isset($this->_connections[$i])) {
+        if (!isset($this->_connections[$i])) {
             throw new Doctrine_Connection_Exception('There is no open connection');
         }
         return $this->_connections[$i];
@@ -677,14 +691,14 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
      * @return void
      * @todo package:dbal
      */
-    public function createDatabases($specifiedConnections = array())
+    public function createDatabases($specifiedConnections = [])
     {
-        if ( ! is_array($specifiedConnections)) {
+        if (!\is_array($specifiedConnections)) {
             $specifiedConnections = (array) $specifiedConnections;
         }
 
         foreach ($this as $name => $connection) {
-            if ( ! empty($specifiedConnections) && ! in_array($name, $specifiedConnections)) {
+            if (!empty($specifiedConnections) && !\in_array($name, $specifiedConnections)) {
                 continue;
             }
 
@@ -842,9 +856,9 @@ class Doctrine_Manager extends Doctrine_Configurable implements Countable, Itera
     /**
      * Get all registered Doctrine extensions
      *
-     * @return $extensions
+     * @return array
      */
-    public function getExtensions()
+    public function getExtensions(): array
     {
         return $this->_extensions;
     }

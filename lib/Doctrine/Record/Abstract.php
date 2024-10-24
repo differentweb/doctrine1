@@ -33,19 +33,13 @@
 abstract class Doctrine_Record_Abstract extends Doctrine_Access
 {
     /**
-     * @param Doctrine_Table $_table     reference to associated Doctrine_Table instance
+     * @var Doctrine_Table $_table     reference to associated Doctrine_Table instance
      */
     protected $_table;
 
-    public function setTableDefinition()
-    {
+    public function setTableDefinition() {}
 
-    }
-
-    public function setUp()
-    {
-    	
-    }	
+    public function setUp() {}
 
     /**
      * getTable
@@ -104,13 +98,12 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
      * @param array $definition         the definition array
      * @return mixed
      */
-    public function index($name, array $definition = array())
+    public function index($name, array $definition = [])
     {
-        if ( ! $definition) {
+        if (!$definition) {
             return $this->_table->getIndex($name);
-        } else {
-            return $this->_table->addIndex($name, $definition);
         }
+        return $this->_table->addIndex($name, $definition);
     }
 
     /**
@@ -125,7 +118,7 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
      * @param bool $createUniqueIndex  Whether or not to create a unique index in the database
      * @return void
      */
-    public function unique($fields, $options = array(), $createUniqueIndex = true)
+    public function unique($fields, $options = [], $createUniqueIndex = true)
     {
         return $this->_table->unique($fields, $options, $createUniqueIndex);
     }
@@ -147,27 +140,27 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
 
     public function setSubclasses($map)
     {
-        $class = get_class($this);
+        $class = \get_class($this);
         // Set the inheritance map for subclasses
         if (isset($map[$class])) {
             // fix for #1621 
-            $mapFieldNames = $map[$class]; 
-            $mapColumnNames = array(); 
+            $mapFieldNames = $map[$class];
+            $mapColumnNames = [];
 
-            foreach ($mapFieldNames as $fieldName => $val) { 
-                $mapColumnNames[$this->getTable()->getColumnName($fieldName)] = $val; 
+            foreach ($mapFieldNames as $fieldName => $val) {
+                $mapColumnNames[$this->getTable()->getColumnName($fieldName)] = $val;
             }
- 
+
             $this->_table->setOption('inheritanceMap', $mapColumnNames);
             return;
         } else {
             // Put an index on the key column
-            $mapFieldName = array_keys(end($map));
-            $this->index($this->getTable()->getTableName().'_'.$mapFieldName[0], array('fields' => array($mapFieldName[0])));
+            $mapFieldName = \array_keys(\end($map));
+            $this->index("{$this->getTable()->getTableName()}_{$mapFieldName[0]}", ['fields' => [$mapFieldName[0]]]);
         }
 
         // Set the subclasses array for the parent class
-        $this->_table->setOption('subclasses', array_keys($map));
+        $this->_table->setOption('subclasses', \array_keys($map));
     }
 
     /**
@@ -182,7 +175,7 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
     public function attribute($attr, $value)
     {
         if ($value == null) {
-            if (is_array($attr)) {
+            if (\is_array($attr)) {
                 foreach ($attr as $k => $v) {
                     $this->_table->setAttribute($k, $v);
                 }
@@ -191,7 +184,7 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
             }
         } else {
             $this->_table->setAttribute($attr, $value);
-        }    
+        }
     }
 
     /**
@@ -206,7 +199,7 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
     public function option($name, $value = null)
     {
         if ($value === null) {
-            if (is_array($name)) {
+            if (\is_array($name)) {
                 foreach ($name as $k => $v) {
                     $this->_table->setOption($k, $v);
                 }
@@ -228,7 +221,7 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
      */
     public function hasOne()
     {
-        $this->_table->bind(func_get_args(), Doctrine_Relation::ONE);
+        $this->_table->bind(\func_get_args(), Doctrine_Relation::ONE);
 
         return $this;
     }
@@ -243,7 +236,7 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
      */
     public function hasMany()
     {
-        $this->_table->bind(func_get_args(), Doctrine_Relation::MANY);
+        $this->_table->bind(\func_get_args(), Doctrine_Relation::MANY);
 
         return $this;
     }
@@ -257,7 +250,7 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
      * @param mixed $options
      * @return void
      */
-    public function hasColumn($name, $type = null, $length = null, $options = array())
+    public function hasColumn($name, $type = null, $length = null, $options = [])
     {
         $this->_table->setColumn($name, $type, $length, $options);
     }
@@ -271,7 +264,7 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
     public function hasColumns(array $definitions)
     {
         foreach ($definitions as $name => $options) {
-            $length = isset($options['length']) ? $options['length']:null;
+            $length = isset($options['length']) ? $options['length'] : null;
             $this->hasColumn($name, $options['type'], $length, $options);
         }
     }
@@ -321,16 +314,16 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
      */
     public function bindQueryParts(array $queryParts)
     {
-    	$this->_table->bindQueryParts($queryParts);
+        $this->_table->bindQueryParts($queryParts);
 
         return $this;
     }
 
     public function loadGenerator(Doctrine_Record_Generator $generator)
     {
-    	$generator->initialize($this->_table);
+        $generator->initialize($this->_table);
 
-        $this->_table->addGenerator($generator, get_class($generator));
+        $this->_table->addGenerator($generator, \get_class($generator));
     }
 
     /**
@@ -346,25 +339,25 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
      * @throws Doctrine_Record_Exception    if $tpl is neither an instance of Doctrine_Template subclass or a valid class name, that could be instantiated.
      * @return Doctrine_Record  this object; provides a fluent interface.
      */
-    public function actAs($tpl, array $options = array())
+    public function actAs($tpl, array $options = [])
     {
-        if ( ! is_object($tpl)) {
-            $className = 'Doctrine_Template_' . $tpl;
+        if (!\is_object($tpl)) {
+            $className = "Doctrine_Template_{$tpl}";
 
-            if (class_exists($className, true)) {
+            if (\class_exists($className, true)) {
                 $tpl = new $className($options);
-            } else if (class_exists($tpl, true)) {
+            } else if (\class_exists($tpl, true)) {
                 $tpl = new $tpl($options);
             } else {
                 throw new Doctrine_Record_Exception('Could not load behavior named: "' . $tpl . '"');
             }
         }
 
-        if ( ! ($tpl instanceof Doctrine_Template)) {
+        if (! ($tpl instanceof Doctrine_Template)) {
             throw new Doctrine_Record_Exception('Loaded behavior class is not an instance of Doctrine_Template.');
         }
 
-        $className = get_class($tpl);
+        $className = \get_class($tpl);
 
         $this->_table->addTemplate($className, $tpl);
 
@@ -387,7 +380,7 @@ abstract class Doctrine_Record_Abstract extends Doctrine_Access
      */
     public function check($constraint, $name = null)
     {
-        if (is_array($constraint)) {
+        if (\is_array($constraint)) {
             foreach ($constraint as $name => $def) {
                 $this->_table->addCheckConstraint($def, $name);
             }

@@ -36,15 +36,15 @@ class Doctrine_Column extends Doctrine_Access implements IteratorAggregate, Coun
     /**
      * @var array $_definition  @see getDefinition()
      */
-    protected $_definition = array(
-                                'type'    => null,
-                                'length'  => 0,
-                                );
+    protected $_definition = [
+        'type'    => null,
+        'length'  => 0,
+    ];
 
     /**
      * @var array $definition  @see getDefinition()
      */
-    public function __construct(array $definition = array())
+    public function __construct(array $definition = [])
     {
         $this->_definition = $definition;
     }
@@ -68,7 +68,7 @@ class Doctrine_Column extends Doctrine_Access implements IteratorAggregate, Coun
      *
      * @return boolean
      */
-    public function contains($name) 
+    public function contains($name): bool
     {
         return isset($this->_definition[$name]);
     }
@@ -81,10 +81,9 @@ class Doctrine_Column extends Doctrine_Access implements IteratorAggregate, Coun
      */
     public function get($name)
     {
-        if ( ! isset($this->_definition[$name])) {
+        if (!isset($this->_definition[$name])) {
             return null;
         }
-        
         return $this->_definition[$name];
     }
 
@@ -107,9 +106,8 @@ class Doctrine_Column extends Doctrine_Access implements IteratorAggregate, Coun
     {
         if (isset($this->_definition['values'])) {
             return $this->_definition['values'];
-        } else {
-            return array();
         }
+        return [];
     }
 
     /**
@@ -146,7 +144,7 @@ class Doctrine_Column extends Doctrine_Access implements IteratorAggregate, Coun
      *
      * @return integer
      */
-    public function count()
+    public function count(): int
     {
         return count($this->_definition);
     }
@@ -156,7 +154,7 @@ class Doctrine_Column extends Doctrine_Access implements IteratorAggregate, Coun
      *
      * @return ArrayIterator
      */
-    public function getIterator() 
+    public function getIterator(): Traversable
     {
         return new ArrayIterator($this->_definition);
     }

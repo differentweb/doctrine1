@@ -33,9 +33,9 @@
 class Doctrine_Collection_Iterator_Normal extends Doctrine_Collection_Iterator
 {
     /**
-     * @return boolean                          whether or not the iteration will continue
+     * @return bool                          whether or not the iteration will continue
      */
-    public function valid()
+    public function valid(): bool
     {
         return ($this->index < $this->count);
     }
