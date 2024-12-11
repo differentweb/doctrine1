@@ -2075,34 +2075,34 @@ class Doctrine_Query extends Doctrine_Query_Abstract implements Countable
             $map = $this->getRootDeclaration();
             $idColumnNames = $map['table']->getIdentifierColumnNames();
 
-            $pkFields = $ta . '.' . implode(', ' . $ta . '.', $this->_conn->quoteMultipleIdentifier($idColumnNames));
+            $pkFields = "{$ta}." . \implode(", {$ta}.", $this->_conn->quoteMultipleIdentifier($idColumnNames));
 
             // We need to do some magic in select fields if the query contain anything in having clause
             $selectFields = $pkFields;
 
-            if (! empty($having)) {
+            if (!empty($having)) {
                 // For each field defined in select clause
                 foreach ($this->_sqlParts['select'] as $field) {
                     // We only include aggregate expressions to count query
                     // This is needed because HAVING clause will use field aliases
                     if (strpos($field, '(') !== false) {
-                        $selectFields .= ', ' . $field;
+                        $selectFields .= ", {$field}";
                     }
                 }
                 // Add having fields that got stripped out of select
-                preg_match_all('/`[a-z0-9_]+`\.`[a-z0-9_]+`/i', $having, $matches, PREG_PATTERN_ORDER);
-                if (count($matches[0]) > 0) {
-                    $selectFields .= ', ' . implode(', ', array_unique($matches[0]));
+                \preg_match_all('/`[a-z0-9_]+`\.`[a-z0-9_]+`/i', $having, $matches, PREG_PATTERN_ORDER);
+                if (\count($matches[0]) > 0) {
+                    $selectFields .= ', ' . \implode(', ', \array_unique($matches[0]));
                 }
             }
 
             // If we do not have a custom group by, apply the default one
             if (empty($groupby)) {
-                $groupby = ' GROUP BY ' . $pkFields;
+                $groupby = " GROUP BY {$pkFields}";
             }
 
-            $q .= '(SELECT ' . $selectFields . ' FROM ' . $from . $where . $groupby . $having . ') '
-                . $this->_conn->quoteIdentifier('dctrn_count_query');
+            $hasCommaPosition = strpos($selectFields, ',');
+            $q = "SELECT COUNT(" . ($hasCommaPosition !== false ? \substr($selectFields, 0, $hasCommaPosition) : $selectFields) . ") AS " . $this->_conn->quoteIdentifier('num_results') . " FROM {$from}{$where}{$groupby}{$having}";
         }
 
         return $q;
