@@ -1665,6 +1665,8 @@ class Doctrine_Table extends Doctrine_Configurable implements Countable, Seriali
 
             // Executing query
             $res = $q->fetchOne($params, $hydrationMode);
+            $q->free();
+            unset($q);
         }
 
         return $res;
