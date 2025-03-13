@@ -321,7 +321,7 @@ class Doctrine_Migration_Diff
                 $info[$key] = $this->_cleanModelInformation($value);
             }
             return $info;
-        } else {
+        } elseif (is_string($info)) {
             $find = array(
                 self::$_toPrefix,
                 self::$_fromPrefix,
@@ -332,6 +332,7 @@ class Doctrine_Migration_Diff
             );
             return str_replace($find, '', (string) $info);
         }
+        return $info;
     }
 
     /**
